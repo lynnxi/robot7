@@ -15,6 +15,8 @@ import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.Console;
+import java.sql.Date;
+import java.util.Timer;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -23,6 +25,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import net.sourceforge.tess4j.ITesseract;
+import net.sourceforge.tess4j.Tesseract;
+import net.sourceforge.tess4j.TesseractException;
 
 
 /**
@@ -55,8 +61,22 @@ public class Eyes {
 			public void actionPerformed(ActionEvent arg0) {
 				new Thread(){
 					public void run(){
+						
 			            while(true){
+			            	
 			            	BufferedImage image = Eyes.look(new Rectangle(50, 50, 900, 1400));
+			                ITesseract instance = new Tesseract();  // JNA Interface Mapping  
+			                instance.setLanguage("chi_sim");//Ìí¼ÓÖÐÎÄ×Ö¿â
+			                try {
+			                	long s = System.currentTimeMillis();
+			                	System.out.println(instance.doOCR(image));
+			                	System.out.println(s - System.currentTimeMillis());
+//			                    String result = instance.doOCR(imageFile);  
+//			                    System.out.println(result);  
+				                } catch (TesseractException e) {  
+				                    System.err.println(e.getMessage());  
+				                }  
+
 			            	//BufferedImage newImg = Eyes.resize(image, label.getWidth(), label.getHeight());
 			            	label.setIcon(new ImageIcon(image));
 			            	
@@ -72,11 +92,15 @@ public class Eyes {
 
 	
 			}
-		});;
+		});
     	panel3.add(button);
+    	
+    	JTextArea area = new JTextArea(20,40);
+    	JScrollPane panel4 = new JScrollPane(area);
 
 		frame.add(panel1, BorderLayout.CENTER);
 		frame.add(label, BorderLayout.EAST);
+		//frame.add(panel4, BorderLayout.CENTER);
 		frame.add(panel3, BorderLayout.SOUTH);
 		
 		//frame.setSize((int)dm.getWidth(), (int)dm.getHeight());
